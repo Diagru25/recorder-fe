@@ -1,0 +1,30 @@
+[type="file"] {
+  height: 0;
+  overflow: hidden;
+  width: 0;
+}
+
+[type="file"] + label {
+    
+  background: #3182ce;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: inherit;
+  font-weight: 500;
+  margin-bottom: 0;
+  outline: none;
+  padding: 5.5px 14px;
+  position: relative;
+  transition: all 0.3s;
+  vertical-align: middle;
+}
+
+[type="file"] + label:hover {
+   /* background-color: darken(#f15d22, 10%); */
+   opacity: 0.8;
+}
+
+
