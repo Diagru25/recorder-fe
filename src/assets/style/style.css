@@ -30,6 +30,21 @@ html {
     color: red;
 }
 
+ul {
+    list-style: none;
+}
+
+#menu-client {
+    display: flex;
+    gap: 1rem;
+    font-size: 12px;
+    font-weight: 500;
+}
+#menu-client li:hover{
+    color: #ff4f5e;
+    cursor: pointer;
+}
+
 @media only screen and (max-width: 576px) {
   .date-picker {
       height: 2rem;
