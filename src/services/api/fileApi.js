@@ -1,15 +1,19 @@
 import { request } from '../baseRequest';
 
 const fileApi = {
-    uploadFile(fileData) {
+    uploadFile(fileData, data) {
         const formData = new FormData();
-        formData.append("files", fileData);
+        formData.append("audio", fileData);
+
+        for (const [key, value] of Object.entries(data)) {
+            formData.append(key, value);
+        }
 
         return request({
-            url: '/admin/v1/members/import',
+            url: '/admin/v1/records/upload',
             method: 'POST',
             data: formData,
-            isAuthRequest: true,
+            isAuthRequest: false,
             headers: {
                 "Content-Type": "multipart/form-data",
             },

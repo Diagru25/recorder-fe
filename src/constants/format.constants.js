@@ -32,12 +32,26 @@ export const CUSTOM_DATE_RANGES = [
     },
 ]
 
-export const STANDARD_TYPE = {
-    ST: "Chuẩn",
-    UP_ST_ONE: "Trên chuẩn độ 1",
-    UP_ST_TWO: "Trên chuẩn độ 2",
-    UP_ST_THREE: "Trên chuẩn độ 3",
-    LOW_ST_ONE: "Dưới chuẩn độ 1",
-    LOW_ST_TWO: "Dưới chuẩn độ 2",
-    LOW_ST_THREE: "Dưới chuẩn độ 3"
+export const GENDER = {
+    MALE: '0',
+    FEMALE: '1'
+}
+
+export const AREA = {
+    NORTH: "Bắc",
+    CENTRAL: "Trung",
+    SOUTH: "Nam",
+}
+
+export const AGE = {
+    AGE_UNDER: 'Dưới 20',
+    AGE_2X: '20 - 29',
+    AGE_3X: '30 - 39',
+    AGE_4X: '40 - 49',
+    AGE_5X: '50 - 59',
+    AGE_6X: '60 - 69',
+    AGE_7X: '70 - 79',
+    AGE_8X: '80 - 89',
+    AGE_9X: '90 - 99',
+    AGE_UPPER: 'Trên 99'
 }
