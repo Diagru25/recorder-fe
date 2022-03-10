@@ -6,3 +6,4 @@ export * from './page_header';
 export * from './search_input';
 export * from './confirm_modal';
 export * from './header_client';
+export * from './outline_button';

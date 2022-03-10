@@ -5,6 +5,7 @@ import brg from '../../assets/images/bgr.png';
 import { useHistory } from 'react-router-dom';
 import { GENDER, AREA, AGE } from '../../constants/format.constants';
 import fileApi from '../../services/api/fileApi';
+import { OutLineButton } from '../../components/outline_button';
 
 URL = window.URL || window.webkitURL;
 
@@ -17,17 +18,24 @@ let AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioContext //audio context to help us record
 
 export const Recorder = () => {
+    const textDemo = [
+        'Quân đội nhân dân Việt Nam',
+        'Huấn luyện cho ngôn ngữ',
+        'Tác chiến không gian mạng',
+        'Lập đội hình tiến công',
+        'Bản đồ tác chiến khu vực'
+    ]
 
     const toast = useToast();
     const history = useHistory();
     const [isRecording, setIsRecording] = useState(false);
-    const [recordList, setRecordList] = useState(null);
-    const [data, setData] = useState({
-        text: 'Quân đội nhân dân Việt Nam',
+    const [recordList, setRecordList] = useState([]);
+    const [formData, setFormData] = useState({
         gender: '',
         area: '',
         age: ''
     });
+    const [step, setStep] = useState(0);
 
     const handleRecord = () => {
         setIsRecording(!isRecording);
@@ -46,7 +54,6 @@ export const Recorder = () => {
         let constraints = { audio: true, video: false }
 
         navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
-            console.log("getUserMedia() success, stream created, initializing Recorder.js ...");
 
             audioContext = new AudioContext();
 
@@ -75,16 +82,31 @@ export const Recorder = () => {
 
     const createDownloadLink = (blob) => {
         let url = URL.createObjectURL(blob);
-        setRecordList({
+        const record = {
             url: url,
             blob: blob
-        })
+        }
+        const recordListClone = [...recordList];
+        const stepItem = recordListClone[step];
+
+        if (stepItem)
+            recordListClone[step] = record;
+        else
+            recordListClone.push(record);
+
+        setRecordList(recordListClone);
+        setStep(step < 4 ? step + 1 : 4);
     };
 
     const handleSubmit = async () => {
 
+        console.log('recordList: ', recordList);
+        console.log('textDemo: ', textDemo);
+        console.log('formData: ', formData);
+        const recordListClone = [...recordList].map((item) => item.blob);
+        const textListClone = [...textDemo];
         try {
-            const res = await fileApi.uploadFile(recordList.blob, data);
+            const res = await fileApi.uploadFile(recordListClone, textListClone, formData);
             if (res.statusCode === 200) {
                 toast({
                     title: 'Tải lên thành công',
@@ -110,7 +132,12 @@ export const Recorder = () => {
 
     const handleRefresh = () => {
         setIsRecording(false);
-        setRecordList(null);
+        setFormData({
+            area: '',
+            gender: '',
+
+        })
+        setRecordList([]);
     }
 
     return (
@@ -148,88 +175,113 @@ export const Recorder = () => {
                         <Icon as={BsArrowLeftShort} w={8} h={8} />
                     </Flex>
                 </Box>
-
-                <Flex >
-                    <Flex
-                        flexDir='column'
-                        flex={1}
-                        pt={3}
-                        justifyContent='center'
-                        alignItems='flex-start'
-                        gap={3}
-                    >
-                        <Select
-                            placeholder='Giới tính'
-                            maxW='300px'
-                            onChange={(e) => setData({ ...data, gender: e.target.value })}
-                        >
-                            <option value={GENDER.MALE}>Nam</option>
-                            <option value={GENDER.FEMALE}>Nữ</option>
-                        </Select>
-                        <Select
-                            placeholder='Vùng miền'
-                            maxW='300px'
-                            onChange={(e) => setData({ ...data, gender: e.target.value })}
-                        >
-                            <option value={AREA.NORTH}>Miền bắc</option>
-                            <option value={AREA.CENTRAL}>Miền trung</option>
-                            <option value={AREA.SOUTH}>Miền nam</option>
-                        </Select>
-                        <Select
-                            placeholder='Độ tuổi'
-                            maxW='300px'
-                            onChange={(e) => setData({ ...data, gender: e.target.value })}
-                        >
-                            <option value={AGE.AGE_UNDER}>{AGE.AGE_UNDER}</option>
-                            <option value={AGE.AGE_2X}>{AGE.AGE_2X}</option>
-                            <option value={AGE.AGE_3X}>{AGE.AGE_3X}</option>
-                            <option value={AGE.AGE_4X}>{AGE.AGE_4X}</option>
-                            <option value={AGE.AGE_5X}>{AGE.AGE_5X}</option>
-                            <option value={AGE.AGE_6X}>{AGE.AGE_6X}</option>
-                            <option value={AGE.AGE_7X}>{AGE.AGE_7X}</option>
-                            <option value={AGE.AGE_8X}>{AGE.AGE_8X}</option>
-                            <option value={AGE.AGE_9X}>{AGE.AGE_9X}</option>
-                            <option value={AGE.AGE_UPPER}>{AGE.AGE_UPPER}</option>
-                        </Select>
-                    </Flex>
-                    <Flex flexDir='column' maxW='60%'>
+                <Flex flexDir='column'>
+                    <Flex >
                         <Flex
+                            flexDir='column'
+                            flex={1}
+                            pt={3}
                             justifyContent='center'
-                            color='#4a4a4a'
-                            fontStyle='italic'
-                            m='28px 0'
+                            alignItems='flex-start'
+                            gap={3}
                         >
-                            <Text>Hãy nhấn</Text>
-                            <Icon as={BsMic} w={6} h={6} color='#ff4f5e' mx={1} />
-                            <Text>và đọc câu dưới đây</Text>
-                        </Flex>
-                        <Box
-                            p='100px 100px'
-                            mx={3}
-                            backgroundColor='white'
-                            maxW='700px'
-                            boxShadow='0 6px 12px 0 rgb(0 0 0 / 5%)'
-                        >
-                            <Text
-                                fontSize={32}
-                                textAlign='center'
+                            <Select
+                                placeholder='Giới tính'
+                                maxW='300px'
+                                value={formData.gender}
+                                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                             >
-                                Quân đội nhân dân Việt Nam, Quân đội nhân dân.
-                            </Text>
-                        </Box>
-                    </Flex>
+                                <option value={GENDER.MALE}>Nam</option>
+                                <option value={GENDER.FEMALE}>Nữ</option>
+                            </Select>
+                            <Select
+                                placeholder='Vùng miền'
+                                maxW='300px'
+                                value={formData.area}
+                                onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                            >
+                                <option value={AREA.NORTH}>Miền bắc</option>
+                                <option value={AREA.CENTRAL}>Miền trung</option>
+                                <option value={AREA.SOUTH}>Miền nam</option>
+                            </Select>
+                            <Select
+                                placeholder='Độ tuổi'
+                                maxW='300px'
+                                value={formData.age}
+                                onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                            >
+                                <option value={AGE.AGE_UNDER}>{AGE.AGE_UNDER}</option>
+                                <option value={AGE.AGE_2X}>{AGE.AGE_2X}</option>
+                                <option value={AGE.AGE_3X}>{AGE.AGE_3X}</option>
+                                <option value={AGE.AGE_4X}>{AGE.AGE_4X}</option>
+                                <option value={AGE.AGE_5X}>{AGE.AGE_5X}</option>
+                                <option value={AGE.AGE_6X}>{AGE.AGE_6X}</option>
+                                <option value={AGE.AGE_7X}>{AGE.AGE_7X}</option>
+                                <option value={AGE.AGE_8X}>{AGE.AGE_8X}</option>
+                                <option value={AGE.AGE_9X}>{AGE.AGE_9X}</option>
+                                <option value={AGE.AGE_UPPER}>{AGE.AGE_UPPER}</option>
+                            </Select>
+                        </Flex>
+                        <Flex flexDir='column' maxW='60%'>
+                            <Flex
+                                justifyContent='center'
+                                color='#4a4a4a'
+                                fontStyle='italic'
+                                m='28px 0'
+                            >
+                                <Text>Hãy nhấn</Text>
+                                <Icon as={BsMic} w={6} h={6} color='#ff4f5e' mx={1} />
+                                <Text>và đọc câu dưới đây</Text>
+                            </Flex>
+                            <Box
+                                p='100px 100px'
+                                mx={3}
+                                backgroundColor='white'
+                                maxW='700px'
+                                boxShadow='0 6px 12px 0 rgb(0 0 0 / 5%)'
+                            >
+                                <Text
+                                    fontSize={32}
+                                    textAlign='center'
+                                >
+                                    {textDemo[step]}
+                                </Text>
+                            </Box>
+                        </Flex>
 
-                    <Flex
-                        flexDir='column'
-                        flex={1}
-                        pt={3}
-                        justifyContent='center'
-                        alignItems='flex-end'
-                        gap={3}
-                    >
-                        <audio controls src={recordList?.url} />
+                        <Flex
+                            flexDir='column'
+                            flex={1}
+                            pt={3}
+                            justifyContent='center'
+                            alignItems='flex-end'
+                            gap={3}
+                        >
+                            {
+                                recordList.length > 0 &&
+                                recordList.map((item, index) => <audio key={index} controls src={item.url} />)
+                            }
+                        </Flex>
+                    </Flex>
+                    <Flex justifyContent='center' gap={3} mt={4}>
+                        {
+                            [0, 1, 2, 3, 4].map((item, index) => <OutLineButton
+                                key={index}
+                                text={item + 1}
+                                isDisabled={item > recordList.length ? true : false}
+                                isSelected={step === item ? true : false}
+                                onClick={() => setStep(item)}
+                                style={{
+                                    padding: '0',
+                                    width: '40px',
+                                    height: '40px'
+                                }}
+                            />)
+                        }
+
                     </Flex>
                 </Flex>
+
                 <Flex
                     justifyContent='center'
                     mt='70px'
@@ -281,42 +333,15 @@ export const Recorder = () => {
                     </Flex>
                 </Flex>
                 <Flex justifyContent='space-between'>
-                    <Flex>
-                        <Flex
-                            h='57px'
-                            backgroundColor='white'
-                            alignItems='center'
-                            justifyContent='center'
-                            border='1px solid rgba(0,0,0,.1)'
-                            borderRadius='50px'
-                            p='0 38px'
-                            _hover={{
-                                cursor: 'pointer',
-                                borderColor: '#000'
-                            }}
-                            onClick={handleRefresh}
-                        >
-                            <Text fontWeight={500} color='black'>Làm mới</Text>
-                        </Flex>
-                    </Flex>
-                    <Flex>
-                        <Flex
-                            h='57px'
-                            backgroundColor={recordList ? 'white' : '#f3f2f1'}
-                            alignItems='center'
-                            justifyContent='center'
-                            border='1px solid rgba(0,0,0,.1)'
-                            borderRadius='50px'
-                            p='0 38px'
-                            _hover={{
-                                cursor: recordList ? 'pointer' : 'auto',
-                                borderColor: recordList && '#000'
-                            }}
-                            onClick={handleSubmit}
-                        >
-                            <Text fontWeight={500} color={recordList ? 'black' : '#959595'}>Gửi lên</Text>
-                        </Flex>
-                    </Flex>
+                    <OutLineButton
+                        text='Làm mới'
+                        onClick={handleRefresh}
+                    />
+                    <OutLineButton
+                        text='Gửi lên'
+                        isDisabled={recordList.length > 0 ? false : true}
+                        onClick={handleSubmit}
+                    />
                 </Flex>
             </Flex>
         </Box>
