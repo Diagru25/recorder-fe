@@ -39,7 +39,7 @@ function* login_saga(action) {
         const res = yield authAPI.login(email, password);
 
         if (res.statusCode === 200) {
-            const sessionKey = res.result.token;
+            const sessionKey = res.data.access_token;
 
             writeLocalStorage(ACCESS_TOKEN, sessionKey);
 
@@ -51,7 +51,6 @@ function* login_saga(action) {
             }));
 
             yield put(authActions.actions.getUserInfo());
-
         }
     }
     catch (error) {
@@ -65,7 +64,7 @@ function* login_saga(action) {
         toast({
             position: 'top',
             title: "Đăng nhập không thành công",
-            description: error.data.message,
+            description: error.message,
             status: "error",
             duration: 5000,
             isClosable: true,
@@ -79,8 +78,8 @@ function* login_saga(action) {
 function* getUserInfo_saga() {
     try {
         const res = yield authAPI.getUserInfo();
-        const { user, permissions } = res.result;
-
+        const { user, permissions } = res.data;
+        console.log(user);
         if (user) {
             yield put(authActions.actions.updateState({
                 isLoading: false,

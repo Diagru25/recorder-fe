@@ -104,6 +104,8 @@ export const HomeClient = () => {
                             cursor: 'pointer',
                             w: '70%',
                         }}
+
+                        onClick={() => history.push(RouterLinks.TRANSCRIPTION)}
                     >
 
                         <Box maxW='50%'>

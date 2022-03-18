@@ -14,7 +14,7 @@ const authApi = {
             url: '/auth/v1/login',
             method: 'POST',
             data: {
-                email: email,
+                username: email,
                 password: password
             },
             isAuthRequest: false
@@ -23,7 +23,7 @@ const authApi = {
 
     getUserInfo: () => {
         return request({
-            url: '/home/v1/users',
+            url: '/admin/v1/users/current',
             method: 'GET',
             isAuthRequest: true
         })

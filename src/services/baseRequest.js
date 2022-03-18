@@ -123,7 +123,7 @@ export const request = ({ method, url, data, isAuthRequest, params, headers = {}
     return new Promise((resolve, reject) => {
         if (isAuthRequest) {
             const accessToken = readLocalStorage(ACCESS_TOKEN);
-            headers["x_access_token"] = accessToken;
+            headers["Authorization"] = `Bearer ${accessToken}`;
         }
 
         // set request params

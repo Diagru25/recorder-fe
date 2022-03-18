@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 import './assets/style/style.css';
 import ClientRouter from './client/client';
+import { LoginPage } from './pages';
 
 
 function App() {
@@ -25,7 +26,8 @@ function App() {
             <ChakraProvider theme={theme}>
                 <Router>
                     <Switch>
-                        <Route path={RouterLinks.HOME_CLIENT} component={ClientRouter} />
+                        <Route exact path={RouterLinks.LOGIN_PAGE} component={LoginPage} />
+                        <Route exact path={RouterLinks.HOME_CLIENT} component={ClientRouter} />
                         <LoginRequireComponent path={RouterLinks.APP} component={AdminRouter} />
 
                         <Redirect to={RouterLinks.HOME_CLIENT} />

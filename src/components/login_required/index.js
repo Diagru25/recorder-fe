@@ -55,7 +55,7 @@ export const LoginRequireComponent = (props) => {
             <Route
                 {...props}
                 onEnter={() => {
-                    //dispatch(actions.authActions.actions.checkSession());
+                    dispatch(actions.authActions.actions.checkSession());
                 }}
             />
         </Switch>

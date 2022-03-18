@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { RouterLinks } from '../../constants/router.constant';
 
-import { Flex, IconButton, Image } from '@chakra-ui/react';
+import { Flex, IconButton, Text, Image } from '@chakra-ui/react';
 import { FiMenu, FiHome, FiUser, FiUsers } from 'react-icons/fi';
 import { AiOutlineSolution, AiOutlineMedicineBox, AiOutlineFileDone, AiOutlineShop, AiOutlineUser } from 'react-icons/ai';
 import NavItem from './NavItem';
@@ -59,6 +59,11 @@ export const SideBar = () => {
                         icon={<FiMenu fontSize='1.25rem' />}
                         onClick={() => { navSize === 'large' ? setNavSize('small') : setNavSize('large') }}
                     />
+                    <Text
+                        fontWeight='bold'
+                        fontSize='22'
+                        display={navSize === 'large' ? 'flex' : 'none'}
+                    >SPEECH2TEXT</Text>
                     {/* <Image
                         src={logo}
                         alt="Logo"
@@ -75,7 +80,7 @@ export const SideBar = () => {
                     link={RouterLinks.HOME_PAGE}
                     onClick={() => setActiveLink(RouterLinks.HOME_PAGE)}
                 />
-                
+
             </Flex>
         </Flex>
     )

@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Flex, Icon, Text, Select, useToast } from '@chakra-ui/react';
 import { BsArrowLeftShort, BsMic, BsSquare } from 'react-icons/bs';
 import brg from '../../assets/images/bgr.png';
 import { useHistory } from 'react-router-dom';
 import { GENDER, AREA, AGE } from '../../constants/format.constants';
 import fileApi from '../../services/api/fileApi';
+import suggestApi from '../..//services/api/suggestApi';
 import { OutLineButton } from '../../components/outline_button';
+import { log } from '../../helpers/log';
 
 URL = window.URL || window.webkitURL;
 
@@ -18,13 +20,6 @@ let AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioContext //audio context to help us record
 
 export const Recorder = () => {
-    const textDemo = [
-        'Quân đội nhân dân Việt Nam',
-        'Huấn luyện cho ngôn ngữ',
-        'Tác chiến không gian mạng',
-        'Lập đội hình tiến công',
-        'Bản đồ tác chiến khu vực'
-    ]
 
     const toast = useToast();
     const history = useHistory();
@@ -36,6 +31,22 @@ export const Recorder = () => {
         age: ''
     });
     const [step, setStep] = useState(0);
+    const [textList, setTextList] = useState([]);
+
+    useEffect(() => {
+        const getRandomSentence = async () => {
+            try {
+                const res = await suggestApi.getRandomSentence();
+                const convertData = res.data.map((item) => item.text)
+                setTextList(convertData);
+            }
+            catch (error) {
+                log('[GET RANDOM TEXT]: ', error);
+            }
+        }
+
+        getRandomSentence();
+    }, [])
 
     const handleRecord = () => {
         setIsRecording(!isRecording);
@@ -100,14 +111,14 @@ export const Recorder = () => {
 
     const handleSubmit = async () => {
 
-        console.log('recordList: ', recordList);
-        console.log('textDemo: ', textDemo);
-        console.log('formData: ', formData);
+        // console.log('recordList: ', recordList);
+        // console.log('textDemo: ', textDemo);
+        // console.log('formData: ', formData);
         const recordListClone = [...recordList].map((item) => item.blob);
-        const textListClone = [...textDemo];
+        const textListClone = [...textList];
         try {
             const res = await fileApi.uploadFile(recordListClone, textListClone, formData);
-            if (res.statusCode === 200) {
+            if (res.statusCode === 201) {
                 toast({
                     title: 'Tải lên thành công',
                     description: "Chân thành cảm ơn sự đóng góp của bạn!",
@@ -135,9 +146,10 @@ export const Recorder = () => {
         setFormData({
             area: '',
             gender: '',
-
+            age: ''
         })
         setRecordList([]);
+        setStep(0);
     }
 
     return (
@@ -244,7 +256,7 @@ export const Recorder = () => {
                                     fontSize={32}
                                     textAlign='center'
                                 >
-                                    {textDemo[step]}
+                                    {textList[step]}
                                 </Text>
                             </Box>
                         </Flex>
