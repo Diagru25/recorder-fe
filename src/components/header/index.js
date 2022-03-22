@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { Link as ReactLink } from 'react-router-dom';
 import { RouterLinks } from '../../constants/router.constant';
-import { AiOutlineCopy } from 'react-icons/ai'
+import { AiOutlineCopy } from 'react-icons/ai';
 
 export const Header = () => {
     const dispatch = useDispatch();

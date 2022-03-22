@@ -4,8 +4,7 @@ import { BsArrowLeftShort, BsMic, BsSquare } from 'react-icons/bs';
 import brg from '../../assets/images/bgr.png';
 import { useHistory } from 'react-router-dom';
 import { GENDER, AREA, AGE } from '../../constants/format.constants';
-import fileApi from '../../services/api/fileApi';
-import suggestApi from '../..//services/api/suggestApi';
+import { fileApi, dictionaryApi } from '../../services/api';
 import { OutLineButton } from '../../components/outline_button';
 import { log } from '../../helpers/log';
 
@@ -36,7 +35,7 @@ export const Recorder = () => {
     useEffect(() => {
         const getRandomSentence = async () => {
             try {
-                const res = await suggestApi.getRandomSentence();
+                const res = await dictionaryApi.getRandomSentence();
                 const convertData = res.data.map((item) => item.text)
                 setTextList(convertData);
             }

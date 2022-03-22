@@ -1,6 +1,6 @@
-import authAPI from '../../services/api/authApi';
+import {authApi} from '../../services/api';
 import { fork, all, takeEvery, put } from 'redux-saga/effects';
-import authActions from './action';
+import actions from './action';
 
 import { clearLocalStorage, writeLocalStorage } from '../../helpers/localStorage';
 import { ACCESS_TOKEN } from '../../constants/auth.constant';
@@ -12,10 +12,10 @@ const toast = createStandaloneToast();
 
 function* checkSession_saga() {
     try {
-        const res = yield authAPI.checkSession();
+        const res = yield authApi.checkSession();
 
         if (res.statusCode !== 200) {
-            yield put(authActions.actions.updateState({
+            yield put(actions.actions.updateState({
                 isLoading: false,
                 isLoggedIn: false,
                 sessionKey: null
@@ -23,7 +23,7 @@ function* checkSession_saga() {
         }
     }
     catch (error) {
-        yield put(authActions.actions.updateState({
+        yield put(actions.actions.updateState({
             isLoading: false,
             isLoggedIn: false,
             sessionKey: null
@@ -36,25 +36,25 @@ function* login_saga(action) {
     try {
         const { email, password } = action.payload;
 
-        const res = yield authAPI.login(email, password);
+        const res = yield authApi.login(email, password);
 
         if (res.statusCode === 200) {
             const sessionKey = res.data.access_token;
 
             writeLocalStorage(ACCESS_TOKEN, sessionKey);
 
-            yield put(authActions.actions.updateState({
+            yield put(actions.actions.updateState({
                 sessionKey: sessionKey,
                 isLoggedIn: true,
                 isLoading: false,
                 error: null
             }));
 
-            yield put(authActions.actions.getUserInfo());
+            yield put(actions.actions.getUserInfo());
         }
     }
     catch (error) {
-        yield put(authActions.actions.updateState({
+        yield put(actions.actions.updateState({
             isLoading: false,
             isLoggedIn: false,
             sessionKey: null,
@@ -77,11 +77,11 @@ function* login_saga(action) {
 
 function* getUserInfo_saga() {
     try {
-        const res = yield authAPI.getUserInfo();
+        const res = yield authApi.getUserInfo();
         const { user, permissions } = res.data;
-        console.log(user);
+
         if (user) {
-            yield put(authActions.actions.updateState({
+            yield put(actions.actions.updateState({
                 isLoading: false,
                 isLoggedIn: true,
                 userInfo: user,
@@ -90,7 +90,7 @@ function* getUserInfo_saga() {
             }))
         }
         else {
-            yield put(authActions.actions.updateState({
+            yield put(actions.actions.updateState({
                 isLoading: false,
                 isLoggedIn: false,
                 sessionKey: null,
@@ -102,7 +102,7 @@ function* getUserInfo_saga() {
         }
     }
     catch (error) {
-        yield put(authActions.actions.updateState({
+        yield put(actions.actions.updateState({
             isLoading: false,
             isLoggedIn: false,
             sessionKey: null,
@@ -117,7 +117,7 @@ function* logout_saga(action) {
     try {
         clearLocalStorage(ACCESS_TOKEN);
 
-        yield put(authActions.actions.updateState({
+        yield put(actions.actions.updateState({
             isLoading: false,
             isLoggedIn: false,
             sessionKey: null,
@@ -132,10 +132,10 @@ function* logout_saga(action) {
 }
 
 function* listen() {
-    yield takeEvery(authActions.types.CHECK_SESSION, checkSession_saga);
-    yield takeEvery(authActions.types.LOGIN, login_saga);
-    yield takeEvery(authActions.types.GET_USER_INFO, getUserInfo_saga);
-    yield takeEvery(authActions.types.LOGOUT, logout_saga);
+    yield takeEvery(actions.types.CHECK_SESSION, checkSession_saga);
+    yield takeEvery(actions.types.LOGIN, login_saga);
+    yield takeEvery(actions.types.GET_USER_INFO, getUserInfo_saga);
+    yield takeEvery(actions.types.LOGOUT, logout_saga);
 }
 
 export default function* authSaga() {

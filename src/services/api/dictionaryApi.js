@@ -1,12 +1,11 @@
 import { request } from '../baseRequest';
 
-const suggestApi = {
+export const dictionaryApi = {
     getRandomSentence: () => {
         return request({
-            url: '/admin/v1/suggests/random_text',
+            url: '/admin/v1/dictionary/random_text',
             method: 'GET',
         })
     }
 }
 
-export default suggestApi;

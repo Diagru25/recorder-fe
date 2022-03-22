@@ -10,7 +10,7 @@ import { RouterLinks } from '../constants/router.constant';
 import { Box, Flex } from '@chakra-ui/react';
 
 import {
-    HomePage
+    HomePage, RecordManagement
 } from '../pages';
 import { SideBar, Header } from '../components';
 
@@ -30,6 +30,10 @@ const AdminRouter = () => {
                 <Header />
                 <Box p={5} fontSize='14px'>
                     <Switch>
+                        <LoginRequireComponent
+                            path={RouterLinks.RECORD_MANAGEMENT}
+                            component={RecordManagement}
+                        />
                         <LoginRequireComponent
                             path={RouterLinks.HOME_PAGE}
                             component={HomePage}

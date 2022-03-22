@@ -6,6 +6,7 @@ import { RouterLinks } from '../../constants/router.constant';
 import { Flex, IconButton, Text, Image } from '@chakra-ui/react';
 import { FiMenu, FiHome, FiUser, FiUsers } from 'react-icons/fi';
 import { AiOutlineSolution, AiOutlineMedicineBox, AiOutlineFileDone, AiOutlineShop, AiOutlineUser } from 'react-icons/ai';
+import { FaRegFileAudio } from 'react-icons/fa';
 import NavItem from './NavItem';
 // import logo from '../../assets/images/logo.png';
 
@@ -63,7 +64,9 @@ export const SideBar = () => {
                         fontWeight='bold'
                         fontSize='22'
                         display={navSize === 'large' ? 'flex' : 'none'}
-                    >SPEECH2TEXT</Text>
+                    >
+                    SPEECH2TEXT
+                    </Text>
                     {/* <Image
                         src={logo}
                         alt="Logo"
@@ -79,6 +82,14 @@ export const SideBar = () => {
                     active={activeLink === RouterLinks.HOME_PAGE && true}
                     link={RouterLinks.HOME_PAGE}
                     onClick={() => setActiveLink(RouterLinks.HOME_PAGE)}
+                />
+                <NavItem
+                    navSize={navSize}
+                    icon={FaRegFileAudio}
+                    title='Quản lý bản ghi'
+                    active={activeLink === RouterLinks.RECORD_MANAGEMENT && true}
+                    link={RouterLinks.RECORD_MANAGEMENT}
+                    onClick={() => setActiveLink(RouterLinks.RECORD_MANAGEMENT)}
                 />
 
             </Flex>

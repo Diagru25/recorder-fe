@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Flex, Icon, Text, Select, useToast } from '@chakra-ui/react';
+import { Box, Flex, Icon, Text, useToast } from '@chakra-ui/react';
 import { BsArrowLeftShort, BsMic, BsSquare } from 'react-icons/bs';
 import brg from '../../assets/images/bgr.png';
 import { useHistory } from 'react-router-dom';
-import { GENDER, AREA, AGE } from '../../constants/format.constants';
 import { OutLineButton } from '../../components/outline_button';
 import { log } from '../../helpers/log';
 import transcriptionApi from '../../services/api/transcriptionApi';
@@ -83,12 +82,6 @@ export const Transcription = () => {
     };
 
     const handleSubmit = async () => {
-
-        // console.log('recordList: ', recordList);
-        // console.log('textDemo: ', textDemo);
-        // console.log('formData: ', formData);
-        // const recordListClone = [...recordList].map((item) => item.blob);
-        // const textListClone = [...textList];
         try {
             const res = await transcriptionApi.transcription(record.blob);
 

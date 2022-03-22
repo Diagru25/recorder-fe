@@ -1,6 +1,6 @@
 import { request } from '../baseRequest';
 
-const authApi = {
+export const authApi = {
     checkSession: () => {
         return request({
             url: '/auth/v1/check_session',
@@ -79,7 +79,4 @@ const authApi = {
             }
         })
     }
-
 }
-
-export default authApi;

@@ -1,6 +1,6 @@
 import { request } from '../baseRequest';
 
-const fileApi = {
+export const fileApi = {
     uploadFile(fileList, textList, data) {
         const formData = new FormData();
 

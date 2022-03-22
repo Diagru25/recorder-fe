@@ -8,26 +8,27 @@ import {
 } from '../pages';
 
 const ClientRouter = () => {
-
     return (
         <Box w='100%' h='100%' >
-            <Switch>
-                <Route
-                    exact
-                    path={RouterLinks.HOME_CLIENT}
-                    component={HomeClient}
-                />
-                <Route
-                    exact
-                    path={RouterLinks.RECORDER}
-                    component={Recorder}
-                />
-                <Route
-                    exact
-                    path={RouterLinks.TRANSCRIPTION}
-                    component={Transcription}
-                />
-            </Switch>
+            <Route>
+                <Switch>
+                    <Route
+
+                        path={RouterLinks.RECORDER}
+                        component={Recorder}
+                    />
+                    <Route
+
+                        path={RouterLinks.TRANSCRIPTION}
+                        component={Transcription}
+                    />
+                    <Route
+
+                        path={RouterLinks.HOME_CLIENT}
+                        component={HomeClient}
+                    />
+                </Switch>
+            </Route>
         </Box>
     )
 }
