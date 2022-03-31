@@ -4,6 +4,8 @@ import { useHistory } from 'react-router-dom';
 import { RouterLinks } from '../../constants/router.constant';
 import { BsMic, BsPlayFill } from 'react-icons/bs';
 import { HeaderClient } from '../../components';
+import bgSpeak from '../../assets/images/speak_pink.svg';
+import bgListen from '../../assets/images/listen_green.svg';
 
 export const HomeClient = () => {
 
@@ -17,7 +19,7 @@ export const HomeClient = () => {
                 {/* record */}
                 <Flex w='100%' borderTop='1px solid #f3f2f0'>
                     <Flex
-                        backgroundImage='https://commonvoice.mozilla.org/dist/df91fa2ab6ba9b38ce01ac2e7dab5947.svg'
+                        backgroundImage={bgSpeak}
                         backgroundSize='contain'
                         backgroundRepeat='no-repeat'
                         style={{
@@ -86,7 +88,7 @@ export const HomeClient = () => {
                         </Box>
                     </Flex>
                     <Flex
-                        backgroundImage='https://commonvoice.mozilla.org/dist/2212d74e9ef542d06e4d015f6a04be57.svg'
+                        backgroundImage={bgListen}
                         backgroundSize='contain'
                         backgroundRepeat='no-repeat'
                         style={{
@@ -149,7 +151,6 @@ export const HomeClient = () => {
                                     filter='blur(5.6px)'
                                     opacity='0.5'
                                 >
-
                                 </Box>
                             </Flex>
                         </Box>
