@@ -119,7 +119,7 @@ export const Transcription = () => {
                 maxW='1400px'
                 p='20px'
                 h='100%'
-                justifyContent='space-between'
+                gap={10}
             >
                 <Box>
                     <Flex
