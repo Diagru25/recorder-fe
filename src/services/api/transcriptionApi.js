@@ -8,7 +8,7 @@ const transcriptionApi = {
         console.log(file);
         formData.append('file', file, `${d}.wav`)
         return request({
-            url: 'http://localhost:5001/transcription',
+            url: '/admin/v1/ai/transcription',
             method: 'POST',
             data: formData,
             headers: {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Flex, Icon, Text, useToast } from '@chakra-ui/react';
+import { Box, Flex, Icon, Text, useToast, Button, Image, Textarea } from '@chakra-ui/react';
 import { BsArrowLeftShort, BsMic, BsSquare } from 'react-icons/bs';
-import brg from '../../assets/images/bgr.png';
 import { useHistory } from 'react-router-dom';
 import { OutLineButton } from '../../components/outline_button';
 import { log } from '../../helpers/log';
@@ -26,15 +25,21 @@ export const Transcription = () => {
         url: '',
         blob: ''
     });
-    const [textResult, setTextResult] = useState(`"Sau khi thu âm, hệ thống sẽ xử lý dữ liệu và hiển thị lên màn hình này"`);
+    const [result, setResult] = useState(null);
 
     const handleRecord = () => {
+
+
+        if (isRecording) {
+            stopRecording();
+            //handleSubmit();
+        }
+        else {
+            startRecording();
+
+        }
         setIsRecording(!isRecording);
 
-        if (isRecording)
-            stopRecording();
-        else
-            startRecording();
     }
 
     const handleBack = () => {
@@ -57,7 +62,7 @@ export const Transcription = () => {
             //start the recording process
             rec.record()
         }).catch(function (err) {
-            console.log(err);
+            log('[TRANSCRIPTION]', err);
             setIsRecording(false);
         });
     }
@@ -79,23 +84,15 @@ export const Transcription = () => {
         }
 
         setRecord(record);
+        handleSubmit(blob);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (blob) => {
         try {
-            const res = await transcriptionApi.transcription(record.blob);
+            const res = await transcriptionApi.transcription(blob ? blob : record.blob);
 
-            // if (res.statusCode === 201) {
-            //     toast({
-            //         title: 'Nhận dạng thành công',
-            //         description: "",
-            //         status: 'success',
-            //         duration: 5000,
-            //         isClosable: true,
-            //     });
-            // }
-            console.log(res);
-            setTextResult(res.text)
+            //console.log(res.data);
+            setResult(res.data);
 
         }
         catch (err) {
@@ -108,17 +105,6 @@ export const Transcription = () => {
             });
         }
 
-    }
-
-    const handleRefresh = () => {
-        // setIsRecording(false);
-        // setFormData({
-        //     area: '',
-        //     gender: '',
-        //     age: ''
-        // })
-        // setRecordList([]);
-        // setStep(0);
     }
 
     return (
@@ -156,100 +142,66 @@ export const Transcription = () => {
                         <Icon as={BsArrowLeftShort} w={8} h={8} />
                     </Flex>
                 </Box>
-                <Flex flexDir='column' alignItems='center'>
-                    <Flex flexDir='column' maxW='60%' mb={4}>
-                        <Flex
-                            justifyContent='center'
-                            color='#4a4a4a'
-                            fontStyle='italic'
-                            m='28px 0'
-                        >
-                            <Text>Hãy nhấn</Text>
-                            <Icon as={BsMic} w={6} h={6} color='#ff4f5e' mx={1} />
-                            <Text>để tiến hành thu âm</Text>
-                        </Flex>
-                        <Box
-                            p='100px 100px'
-                            mx={3}
-                            backgroundColor='white'
-                            maxW='700px'
-                            boxShadow='0 6px 12px 0 rgb(0 0 0 / 5%)'
-                        >
-                            <Text
-                                fontSize={32}
-                                textAlign='center'
-                            >
-                                {textResult}
-                            </Text>
-                        </Box>
+
+                <Flex gap={8}>
+                    <Flex flex={1} flexDir='column' alignContent='flex-start' gap={3}>
+                        <Text fontWeight='bold' fontSize={20} color='blue.600'>THU ÂM</Text>
+                        <Button onClick={handleRecord} colorScheme='blue'>{isRecording ? 'Dừng' : 'Ghi âm'}</Button>
+
+                        {
+                            record.url && <audio controls src={record.url} />
+                        }
+
                     </Flex>
-                    {
-                        record.url && <audio controls src={record.url} />
-                    }
+                    <Flex flex={3} flexDir='column' gap={3}>
+                        <Text fontWeight='bold' fontSize={20} color='blue.600'>KẾT QUẢ</Text>
+                        <Textarea value={result?.text} onChange={() => { }} />
+                    </Flex>
 
                 </Flex>
 
-                <Flex
-                    justifyContent='center'
-                    mt='70px'
-                    backgroundImage={brg}
-                    backgroundSize='contain'
-                    backgroundRepeat='no-repeat'
-                    backgroundPosition='center'
-                >
-                    <Flex
-                        w='88px'
-                        h='88px'
-                        border='none'
-                        borderRadius='50%'
-                        alignItems='center'
-                        justifyContent='center'
-                        backgroundColor='white'
-                        marginX='40px'
-                        transition='0.5s'
-                        _hover={{
-                            cursor: 'pointer',
-                            transform: 'scale(0.8)'
-                        }}
 
-                        onClick={handleRecord}
-                    >
-                        <Flex
-                            w='88px'
-                            h='88px'
-                            border='none'
-                            borderRadius='50%'
-                            alignItems='center'
-                            justifyContent='center'
-                            backgroundColor='white'
-                            zIndex={50}
-                        >
-                            <Icon as={isRecording ? BsSquare : BsMic} w={8} h={8} color='#ff4f5e' />
+
+                {result !== null
+                    ?
+                    <Flex flexDir='column'>
+                        <Flex>
+                            <Text><b>Câu lệnh: </b>{result.commands.join(',')}</Text>
                         </Flex>
-                        <Box
-                            w='100px'
-                            h='100px'
-                            m={0}
-                            borderRadius='50%'
-                            background='linear-gradient(90deg,#f89096,#b1b4e5)'
-                            position='absolute'
-                            filter='blur(7.6px)'
-                            opacity='0.6'
-                        >
-                        </Box>
+                        <Flex>
+                            <Text fontWeight='bold' mr={2}>Danh sách vị trí:</Text>
+                            <Flex flexDir='column'>
+                                {
+                                    result.locations.map((item, index) =>
+                                        <Text key={index}>{item.name} [{item.coordinate.join(',')}]</Text>
+                                    )
+                                }
+                            </Flex>
+                        </Flex>
+                        <Flex>
+                            <Text fontWeight='bold' mr={2}>Dánh sách icon:</Text>
+                            <Flex flexDir='column'>
+                                {
+                                    result.icons.map((item, index) => <Flex key={index} alignItems='center' gap={2}>
+                                        <Text >{item.name}</Text>
+                                        <Image src={`${process.env.REACT_APP_BASE_URL}/v1/resources/get_file/?filename=${item.icon}`} w={6} h={6} />
+                                    </Flex>)
+                                }
+                            </Flex>
+
+                        </Flex>
                     </Flex>
-                </Flex>
-                <Flex justifyContent='space-between'>
-                    <OutLineButton
-                        text='Làm mới'
-                        onClick={handleRefresh}
-                    />
+                    :
+                    null
+                }
+
+                {/* <Flex justifyContent='space-between'>
                     <OutLineButton
                         text='Gửi lên'
                         //isDisabled={recordList.length > 0 ? false : true}
                         onClick={handleSubmit}
                     />
-                </Flex>
+                </Flex> */}
             </Flex>
         </Box>
     )
