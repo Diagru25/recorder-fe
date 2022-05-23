@@ -1,21 +1,14 @@
 import actions from './action';
 
 const initialState = {
-    
-    recordList: {
-        items: [],
-        isPending: false,
-        pageIndex: 0,
-        pageSize: 20,
-        textSearch: ''
-    }
+    transcriptionResult: null
 }
 
 const reducer = (state = initialState, action) => {
     const payload = action.payload;
 
     switch(action.type) {
-        case actions.types.GET_RECORD_LIST:
+        case actions.types.TRANSCRIPTION:
             return state;
         
         case actions.types.UPDATE_STATE:

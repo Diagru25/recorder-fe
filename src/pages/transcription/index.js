@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useActions } from '../../redux/useActions';
 import { Box, Flex, Icon, Text, useToast, Button, Image, Textarea } from '@chakra-ui/react';
 import { BsArrowLeftShort, BsMic, BsSquare } from 'react-icons/bs';
 import { useHistory } from 'react-router-dom';
-import { OutLineButton } from '../../components/outline_button';
 import { log } from '../../helpers/log';
-import transcriptionApi from '../../services/api/transcriptionApi';
+import Map from './map';
+
 
 URL = window.URL || window.webkitURL;
 
@@ -16,30 +18,28 @@ let input; 							//MediaStreamAudioSourceNode we'll be recording
 let AudioContext = window.AudioContext || window.webkitAudioContext;
 let audioContext //audio context to help us record
 
+
+
 export const Transcription = () => {
 
+    const dispatch = useDispatch();
+    const { transcriptionActions } = useActions();
     const toast = useToast();
     const history = useHistory();
+
+    const transcriptionResult = useSelector(state => state.transcriptionReducer.transcriptionResult);
     const [isRecording, setIsRecording] = useState(false);
     const [record, setRecord] = useState({
         url: '',
         blob: ''
     });
-    const [result, setResult] = useState(null);
 
     const handleRecord = () => {
-
-
-        if (isRecording) {
+        if (isRecording)
             stopRecording();
-            //handleSubmit();
-        }
-        else {
+        else
             startRecording();
-
-        }
-        setIsRecording(!isRecording);
-
+        setIsRecording(prev => !prev);
     }
 
     const handleBack = () => {
@@ -84,27 +84,11 @@ export const Transcription = () => {
         }
 
         setRecord(record);
-        handleSubmit(blob);
+        handleTranscription(blob);
     };
 
-    const handleSubmit = async (blob) => {
-        try {
-            const res = await transcriptionApi.transcription(blob ? blob : record.blob);
-
-            //console.log(res.data);
-            setResult(res.data);
-
-        }
-        catch (err) {
-            toast({
-                title: 'Lỗi',
-                description: err.data.message.message,
-                status: 'error',
-                duration: 5000,
-                isClosable: true,
-            });
-        }
-
+    const handleTranscription = (blob) => {
+        dispatch(transcriptionActions.actions.transcription(blob));
     }
 
     return (
@@ -153,55 +137,47 @@ export const Transcription = () => {
                         }
 
                     </Flex>
+
                     <Flex flex={3} flexDir='column' gap={3}>
                         <Text fontWeight='bold' fontSize={20} color='blue.600'>KẾT QUẢ</Text>
-                        <Textarea value={result?.text} onChange={() => { }} />
+                        <Textarea value={transcriptionResult?.text} onChange={() => { }} />
                     </Flex>
+
+                    {transcriptionResult !== null
+                        ?
+                        <Flex flexDir='column' flex={2}>
+                            <Flex>
+                                <Text><b>Câu lệnh: </b>{transcriptionResult?.commands.join(',')}</Text>
+                            </Flex>
+                            <Flex>
+                                <Text fontWeight='bold' mr={2}>Danh sách vị trí:</Text>
+                                <Flex flexDir='column'>
+                                    {
+                                        transcriptionResult?.locations?.map((item, index) =>
+                                            <Text key={index}>{item.name} [{item.coordinate.join(',')}]</Text>
+                                        )
+                                    }
+                                </Flex>
+                            </Flex>
+                            <Flex>
+                                <Text fontWeight='bold' mr={2}>Dánh sách icon:</Text>
+                                <Flex flexDir='column'>
+                                    {
+                                        transcriptionResult?.icons.map((item, index) => <Flex key={index} alignItems='center' gap={2}>
+                                            <Text >{item.name}</Text>
+                                            <Image src={`${process.env.REACT_APP_BASE_URL}/v1/resources/get_file/?filename=${item.icon}`} w={6} h={6} />
+                                        </Flex>)
+                                    }
+                                </Flex>
+
+                            </Flex>
+                        </Flex>
+                        :
+                        null
+                    }
 
                 </Flex>
-
-
-
-                {result !== null
-                    ?
-                    <Flex flexDir='column'>
-                        <Flex>
-                            <Text><b>Câu lệnh: </b>{result.commands.join(',')}</Text>
-                        </Flex>
-                        <Flex>
-                            <Text fontWeight='bold' mr={2}>Danh sách vị trí:</Text>
-                            <Flex flexDir='column'>
-                                {
-                                    result.locations.map((item, index) =>
-                                        <Text key={index}>{item.name} [{item.coordinate.join(',')}]</Text>
-                                    )
-                                }
-                            </Flex>
-                        </Flex>
-                        <Flex>
-                            <Text fontWeight='bold' mr={2}>Dánh sách icon:</Text>
-                            <Flex flexDir='column'>
-                                {
-                                    result.icons.map((item, index) => <Flex key={index} alignItems='center' gap={2}>
-                                        <Text >{item.name}</Text>
-                                        <Image src={`${process.env.REACT_APP_BASE_URL}/v1/resources/get_file/?filename=${item.icon}`} w={6} h={6} />
-                                    </Flex>)
-                                }
-                            </Flex>
-
-                        </Flex>
-                    </Flex>
-                    :
-                    null
-                }
-
-                {/* <Flex justifyContent='space-between'>
-                    <OutLineButton
-                        text='Gửi lên'
-                        //isDisabled={recordList.length > 0 ? false : true}
-                        onClick={handleSubmit}
-                    />
-                </Flex> */}
+                <Map locations={transcriptionResult?.locations || []} />
             </Flex>
         </Box>
     )

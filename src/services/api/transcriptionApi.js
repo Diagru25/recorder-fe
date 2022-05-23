@@ -1,11 +1,10 @@
 import { request } from '../baseRequest';
 
-const transcriptionApi = {
+export const transcriptionApi = {
     transcription: (file) => {
         const formData = new FormData();
 
         let d = new Date().getTime();
-        console.log(file);
         formData.append('file', file, `${d}.wav`)
         return request({
             url: '/admin/v1/ai/transcription',
@@ -18,4 +17,3 @@ const transcriptionApi = {
     }
 }
 
-export default transcriptionApi;
