@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useActions } from '../../redux/useActions';
-import { Box, Flex, Icon, Text, useToast, Button, Image, Textarea } from '@chakra-ui/react';
+import { Box, Flex, Icon, Text, useToast, Button, Image, Textarea, FormControl, FormLabel, Select, Divider } from '@chakra-ui/react';
 import { BsArrowLeftShort, BsMic, BsSquare } from 'react-icons/bs';
 import { useHistory } from 'react-router-dom';
 import { log } from '../../helpers/log';
 import Map from './map';
+import { ModalCreate } from './components';
 
 
 URL = window.URL || window.webkitURL;
@@ -33,6 +34,8 @@ export const Transcription = () => {
         url: '',
         blob: ''
     });
+
+    const [isOpenModal, setIsOpenModal] = useState(false);
 
     const handleRecord = () => {
         if (isRecording)
@@ -92,93 +95,114 @@ export const Transcription = () => {
     }
 
     return (
-        <Box
-            backgroundImage='linear-gradient(0deg,#fff 20%,#f3f2f1)'
-            w='100%'
-            h='100%'
-        >
-            <Flex
-                flexDir='column'
-                margin='0 auto'
-                maxW='1400px'
-                p='20px'
+        <>
+            <Box
+                backgroundImage='linear-gradient(0deg,#fff 20%,#f3f2f1)'
+                w='100%'
                 h='100%'
-                gap={10}
             >
-                <Box>
-                    <Flex
-                        w='57px'
-                        h='57px'
-                        backgroundColor='white'
-                        border='none'
-                        borderRadius='50%'
-                        alignItems='center'
-                        justifyContent='center'
-                        transition='0.5s'
-                        boxShadow='0 2px 4px 0 rgb(0 0 0 / 9%)'
-                        _hover={{
-                            cursor: 'pointer',
-                            transform: 'scale(0.9)',
-                        }}
+                <Flex
+                    flexDir='column'
+                    margin='0 auto'
+                    maxW='1400px'
+                    p='20px'
+                    h='100%'
+                    gap={10}
+                >
+                    <Box>
+                        <Flex
+                            w='57px'
+                            h='57px'
+                            backgroundColor='white'
+                            border='none'
+                            borderRadius='50%'
+                            alignItems='center'
+                            justifyContent='center'
+                            transition='0.5s'
+                            boxShadow='0 2px 4px 0 rgb(0 0 0 / 9%)'
+                            _hover={{
+                                cursor: 'pointer',
+                                transform: 'scale(0.9)',
+                            }}
 
-                        onClick={handleBack}
-                    >
-                        <Icon as={BsArrowLeftShort} w={8} h={8} />
+                            onClick={handleBack}
+                        >
+                            <Icon as={BsArrowLeftShort} w={8} h={8} />
+                        </Flex>
+                    </Box>
+
+                    <Flex justifyContent='space-between' alignItems='flex-end'>
+                        <FormControl>
+                            <FormLabel>Chọn báo cáo</FormLabel>
+                            <Select placeholder='Chọn báo cáo' maxW={300}>
+                                <option>Báo cáo 1</option>
+                                <option>Báo cáo 2</option>
+                                <option>Báo cáo 3</option>
+                            </Select>
+                        </FormControl>
+                        <Button colorScheme='green' onClick={() => setIsOpenModal(true)}>Thêm mới</Button>
                     </Flex>
-                </Box>
 
-                <Flex gap={8}>
-                    <Flex flex={1} flexDir='column' alignContent='flex-start' gap={3}>
-                        <Text fontWeight='bold' fontSize={20} color='blue.600'>THU ÂM</Text>
-                        <Button onClick={handleRecord} colorScheme='blue'>{isRecording ? 'Dừng' : 'Ghi âm'}</Button>
+                    <Divider />
 
-                        {
-                            record.url && <audio controls src={record.url} />
+                    <Flex gap={8}>
+                        <Flex flex={1} flexDir='column' alignContent='flex-start' gap={3}>
+                            <Text fontWeight='bold' fontSize={20} color='blue.600'>THU ÂM</Text>
+                            <Button onClick={handleRecord} colorScheme='blue'>{isRecording ? 'Dừng' : 'Ghi âm'}</Button>
+
+                            {
+                                record.url && <audio controls src={record.url} />
+                            }
+
+                        </Flex>
+
+                        <Flex flex={3} flexDir='column' gap={3}>
+                            <Text fontWeight='bold' fontSize={20} color='blue.600'>KẾT QUẢ</Text>
+                            <Textarea value={transcriptionResult?.text} onChange={() => { }} />
+                        </Flex>
+
+                        {transcriptionResult !== null
+                            ?
+                            <Flex flexDir='column' flex={2}>
+                                <Flex>
+                                    <Text><b>Câu lệnh: </b>{transcriptionResult?.commands.join(',')}</Text>
+                                </Flex>
+                                <Flex>
+                                    <Text fontWeight='bold' mr={2}>Danh sách vị trí:</Text>
+                                    <Flex flexDir='column'>
+                                        {
+                                            transcriptionResult?.locations?.map((item, index) =>
+                                                <Text key={index}>{item.name} [{item.coordinate.join(',')}]</Text>
+                                            )
+                                        }
+                                    </Flex>
+                                </Flex>
+                                <Flex>
+                                    <Text fontWeight='bold' mr={2}>Dánh sách icon:</Text>
+                                    <Flex flexDir='column'>
+                                        {
+                                            transcriptionResult?.icons.map((item, index) => <Flex key={index} alignItems='center' gap={2}>
+                                                <Text >{item.name}</Text>
+                                                <Image src={`${process.env.REACT_APP_BASE_URL}/v1/resources/get_file/?filename=${item.icon}`} w={6} h={6} />
+                                            </Flex>)
+                                        }
+                                    </Flex>
+
+                                </Flex>
+                            </Flex>
+                            :
+                            null
                         }
 
                     </Flex>
-
-                    <Flex flex={3} flexDir='column' gap={3}>
-                        <Text fontWeight='bold' fontSize={20} color='blue.600'>KẾT QUẢ</Text>
-                        <Textarea value={transcriptionResult?.text} onChange={() => { }} />
-                    </Flex>
-
-                    {transcriptionResult !== null
-                        ?
-                        <Flex flexDir='column' flex={2}>
-                            <Flex>
-                                <Text><b>Câu lệnh: </b>{transcriptionResult?.commands.join(',')}</Text>
-                            </Flex>
-                            <Flex>
-                                <Text fontWeight='bold' mr={2}>Danh sách vị trí:</Text>
-                                <Flex flexDir='column'>
-                                    {
-                                        transcriptionResult?.locations?.map((item, index) =>
-                                            <Text key={index}>{item.name} [{item.coordinate.join(',')}]</Text>
-                                        )
-                                    }
-                                </Flex>
-                            </Flex>
-                            <Flex>
-                                <Text fontWeight='bold' mr={2}>Dánh sách icon:</Text>
-                                <Flex flexDir='column'>
-                                    {
-                                        transcriptionResult?.icons.map((item, index) => <Flex key={index} alignItems='center' gap={2}>
-                                            <Text >{item.name}</Text>
-                                            <Image src={`${process.env.REACT_APP_BASE_URL}/v1/resources/get_file/?filename=${item.icon}`} w={6} h={6} />
-                                        </Flex>)
-                                    }
-                                </Flex>
-
-                            </Flex>
-                        </Flex>
-                        :
-                        null
-                    }
-
+                    <Map locations={transcriptionResult?.locations || []} />
                 </Flex>
-                <Map locations={transcriptionResult?.locations || []} />
-            </Flex>
-        </Box>
+            </Box>
+
+            <ModalCreate
+                isOpen={isOpenModal}
+                onClose={() => setIsOpenModal(false)}
+            />
+        </>
     )
 }
