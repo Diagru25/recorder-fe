@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { log } from '../../helpers/log';
 import Map from './map';
 import { ModalCreate } from './components';
+import { reportApi } from '../../services/api';
 
 
 URL = window.URL || window.webkitURL;
@@ -24,7 +25,7 @@ let audioContext //audio context to help us record
 export const Transcription = () => {
 
     const dispatch = useDispatch();
-    const { transcriptionActions } = useActions();
+    const { transcriptionActions, reportActions } = useActions();
     const toast = useToast();
     const history = useHistory();
 
@@ -35,7 +36,27 @@ export const Transcription = () => {
         blob: ''
     });
 
+    const [reportList, setReportList] = useState([]);
     const [isOpenModal, setIsOpenModal] = useState(false);
+    const [selectedReport, setSelectedReport] = useState('');
+
+    useEffect(() => {
+        const fetchReport = async () => {
+            try {
+                const res = await reportApi.getReportSelect();
+                setReportList(res.data);
+            }
+            catch (err) {
+                toast({
+                    status: 'error',
+                    title: 'Lỗi',
+                    description: err
+                })
+            }
+        }
+
+        fetchReport();
+    }, [])
 
     const handleRecord = () => {
         if (isRecording)
@@ -91,7 +112,19 @@ export const Transcription = () => {
     };
 
     const handleTranscription = (blob) => {
-        dispatch(transcriptionActions.actions.transcription(blob));
+        if (selectedReport)
+            dispatch(transcriptionActions.actions.transcription(blob, selectedReport));
+        else
+            toast({
+                status: 'error',
+                title: 'Lỗi',
+                description: 'Hãy chọn 1 báo cáo'
+            })
+    }
+
+    const createReportHandler = (data) => {
+        dispatch(reportActions.actions.createReport(data));
+        setIsOpenModal(false);
     }
 
     return (
@@ -107,7 +140,7 @@ export const Transcription = () => {
                     maxW='1400px'
                     p='20px'
                     h='100%'
-                    gap={10}
+                    gap={5}
                 >
                     <Box>
                         <Flex
@@ -134,10 +167,15 @@ export const Transcription = () => {
                     <Flex justifyContent='space-between' alignItems='flex-end'>
                         <FormControl>
                             <FormLabel>Chọn báo cáo</FormLabel>
-                            <Select placeholder='Chọn báo cáo' maxW={300}>
-                                <option>Báo cáo 1</option>
-                                <option>Báo cáo 2</option>
-                                <option>Báo cáo 3</option>
+                            <Select
+                                placeholder='Chọn báo cáo'
+                                maxW={300}
+                                value={selectedReport}
+                                onChange={(e) => setSelectedReport(e.target.value)}
+                            >
+                                {
+                                    reportList.map((item, index) => <option key={index} value={item._id}>{item.name}</option>)
+                                }
                             </Select>
                         </FormControl>
                         <Button colorScheme='green' onClick={() => setIsOpenModal(true)}>Thêm mới</Button>
@@ -202,6 +240,7 @@ export const Transcription = () => {
             <ModalCreate
                 isOpen={isOpenModal}
                 onClose={() => setIsOpenModal(false)}
+                onSave={createReportHandler}
             />
         </>
     )

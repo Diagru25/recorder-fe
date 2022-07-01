@@ -5,3 +5,4 @@ export * from './fileApi';
 export * from './transcriptionApi';
 export * from './iconApi';
 export * from './locationApi';
+export * from './reportApi';

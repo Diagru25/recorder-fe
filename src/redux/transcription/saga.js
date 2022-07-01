@@ -9,9 +9,9 @@ const toast = createStandaloneToast();
 
 function* transcription_saga(action) {
     try {
-        const { audio } = action.payload;
+        const { audio, report_id } = action.payload;
 
-        const res = yield transcriptionApi.transcription(audio);
+        const res = yield transcriptionApi.transcription(audio, report_id);
         const result = res.data;
 
         yield put(actions.actions.updateState({ transcriptionResult: result }));

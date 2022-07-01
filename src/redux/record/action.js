@@ -44,6 +44,6 @@ const actions = {
     }
 }
 
-const authActions = {actions, types};
+const reportActions = {actions, types};
 
-export default authActions;
+export default reportActions;

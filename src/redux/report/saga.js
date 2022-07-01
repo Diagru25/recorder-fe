@@ -1,4 +1,4 @@
-import {recordApi} from '../../services/api';
+import {reportApi} from '../../services/api';
 import { fork, all, takeEvery, put, select } from 'redux-saga/effects';
 import actions from './action';
 import { log } from '../../helpers/log';
@@ -7,30 +7,30 @@ import { createStandaloneToast} from '@chakra-ui/react';
 
 const toast = createStandaloneToast();
 
-function* getRecordList_saga(action) {
+function* getReportList_saga(action) {
     try {
 
         const { params } = action.payload;
-        const recordList = yield select(state => state.recordReducer.recordList);
+        const reportList = yield select(state => state.recordReducer.reportList);
 
         const pageSize = params.pageSize
             ? params.pageSize
-            : recordList.pageSize;
+            : reportList.pageSize;
         const pageIndex = params.pageIndex
             ? params.pageIndex
-            : recordList.pageIndex;
+            : reportList.pageIndex;
         const textSearch =
             params.textSearch !== undefined
                 ? params.textSearch
-                : recordList.textSearch;
+                : reportList.textSearch;
 
-        const res = yield recordApi.getRecordList(pageIndex, pageSize, textSearch);
+        const res = yield reportApi.getReportList(pageIndex, pageSize, textSearch);
 
         const { items, page_index, page_size, total } = res.data;
 
         yield put(actions.actions.updateState({
-            recordList: {
-                ...recordList,
+            reportList: {
+                ...reportList,
                 items: items,
                 total,
                 pageIndex: page_index,
@@ -43,7 +43,7 @@ function* getRecordList_saga(action) {
     }
     catch (error) {
         yield put(actions.actions.updateState({
-            recordList: {
+            reportList: {
                 items: [],
                 total: 0,
                 pageIndex: 0,
@@ -53,31 +53,31 @@ function* getRecordList_saga(action) {
             }
         }));
         //yield put(actions.actions.setDefaultChildren());
-        log('[RECORD SAGA][getRecordList_saga]', error);
+        log('[RECORD SAGA][getreportList_saga]', error);
     }
 }
 
-function* getRecordDetailById_saga(action) {
+function* getReportDetailById_saga(action) {
     try {
         const { recordId } = action.payload;
 
-        const res = yield recordApi.getRecordDetailById(recordId);
+        const res = yield reportApi.getReportDetailById(recordId);
         const result = res.data;
 
-        yield put(actions.actions.updateState({ currentRecord: result }));
+        yield put(actions.actions.updateState({ currentReport: result }));
     }
     catch (error) {
-        log('[RECORD SAGA][getRecordDetailById_saga]', error);
+        log('[RECORD SAGA][getReportDetailById_saga]', error);
     }
 }
 
-function* deleteRecord_saga(action) {
+function* deleteReport_saga(action) {
     try {
-        const { recordId } = action.payload;
+        const { reportId } = action.payload;
 
-        yield recordApi.deleteRecord(recordId);
+        // yield reportApi.dele(reportId);
 
-        yield put(actions.actions.getRecordList());
+        // yield put(actions.actions.getRecordList());
 
         toast({
             position: 'top',
@@ -100,12 +100,41 @@ function* deleteRecord_saga(action) {
     }
 }
 
-function* listen() {
-    yield takeEvery(actions.types.GET_RECORD_LIST, getRecordList_saga);
-    yield takeEvery(actions.types.GET_RECORD_DETAIL_BY_ID, getRecordDetailById_saga);
-    yield takeEvery(actions.types.DELETE_RECORD, deleteRecord_saga);
+function* createReport_saga(action) {
+    try {
+        const { data } = action.payload;
+
+        yield reportApi.createReport(data);
+
+        yield put(actions.actions.getReportList());
+
+        toast({
+            position: 'top',
+            description: 'Thêm bản ghi thành công',
+            status: 'success',
+            duration: 5000,
+            isClosable: true
+        })
+    }
+    catch (error) {
+        toast({
+            position: 'top',
+            title: 'Them bản ghi không thành công',
+            description: error.data.message,
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+        });
+        log('[RECORD SAGA][createRecord_saga]', error);
+    }
 }
 
-export default function* recordSaga() {
+function* listen() {
+    yield takeEvery(actions.types.GET_REPORT_LIST, getReportList_saga);
+    yield takeEvery(actions.types.GET_REPORT_DETAIL_BY_ID, getReportDetailById_saga);
+    yield takeEvery(actions.types.CREATE_REPORT, createReport_saga);
+}
+
+export default function* reportSaga() {
     yield all([fork(listen)]);
 }

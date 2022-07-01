@@ -6,11 +6,12 @@ const types = {
 }
 
 const actions = {
-    transcription: (audio = null) => {
+    transcription: (audio = null, report_id = '') => {
         return {
             type: types.TRANSCRIPTION,
             payload: {
-                audio
+                audio,
+                report_id
             }
         }
     },
