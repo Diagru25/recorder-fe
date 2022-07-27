@@ -28,5 +28,28 @@ export const recordApi = {
             method: 'DELETE',
             isAuthRequest: true
         })
+    },
+
+    getRecordCompare: (quantity = 5) => {
+        return request({
+            url: '/admin/v1/records/random_compare',
+            method: 'GET',
+            params: {
+                quantity
+            },
+            isAuthRequest: false
+        })
+    },
+
+    updateCompare: (dataList = []) => {
+        return request({
+            url: '/admin/v1/records/update_compare',
+            method: 'POST',
+            data: {
+                dataList
+            },
+            isAuthRequest: false
+        })
     }
+
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Flex, Text } from '@chakra-ui/react';
-
+import { Link } from 'react-router-dom';
+import { RouterLinks } from '../../constants/router.constant';
 
 export const HeaderClient = () => {
     return (
@@ -20,7 +21,7 @@ export const HeaderClient = () => {
                     <Text fontSize={18} fontWeight={500}>SPEECH2TEXT</Text>
                     <ul id='menu-client'>
                         <li>ĐÓNG GÓP</li>
-                        <li>DATASET</li>
+                        <Link to={RouterLinks.COMPARE_RECORD}><li>KIỂM TRA</li></Link>
                         <li>NGÔN NGỮ</li>
                         <li>GIỚI THIỆU</li>
                     </ul>

@@ -1,9 +1,9 @@
-import {recordApi} from '../../services/api';
+import { recordApi } from '../../services/api';
 import { fork, all, takeEvery, put, select } from 'redux-saga/effects';
 import actions from './action';
 import { log } from '../../helpers/log';
 
-import { createStandaloneToast} from '@chakra-ui/react';
+import { createStandaloneToast } from '@chakra-ui/react';
 
 const toast = createStandaloneToast();
 
@@ -100,10 +100,62 @@ function* deleteRecord_saga(action) {
     }
 }
 
+function* getRecordCompare_saga() {
+    try {
+        const res = yield recordApi.getRecordCompare();
+        //console.log(res);
+
+        yield put(actions.actions.updateState({ recordCompareList: res.data }));
+    }
+    catch (error) {
+        toast({
+            position: 'top',
+            title: 'Lấy bản ghi không thành công',
+            description: error.data.message,
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+        });
+        log('[RECORD SAGA][getRecordCompare_saga]', error);
+    }
+}
+
+function* updateRecordCompare_saga(action) {
+    try {
+        const { dataList } = action.payload;
+
+        yield recordApi.updateCompare(dataList);
+
+        yield put(actions.actions.updateState({ updateCompareList: [] }));
+
+        toast({
+            position: 'top',
+            title: 'Upload thành công',
+            description: 'Xin chân thành cảm ơn!',
+            status: 'success',
+            duration: 5000,
+            isClosable: true
+        });
+    }
+    catch (error) {
+        toast({
+            position: 'top',
+            title: 'Lấy bản ghi không thành công',
+            description: error.data.message,
+            status: 'error',
+            duration: 5000,
+            isClosable: true
+        });
+        log('[RECORD SAGA][getRecordCompare_saga]', error);
+    }
+}
+
 function* listen() {
     yield takeEvery(actions.types.GET_RECORD_LIST, getRecordList_saga);
     yield takeEvery(actions.types.GET_RECORD_DETAIL_BY_ID, getRecordDetailById_saga);
     yield takeEvery(actions.types.DELETE_RECORD, deleteRecord_saga);
+    yield takeEvery(actions.types.GET_RECORD_COMPARE, getRecordCompare_saga);
+    yield takeEvery(actions.types.UPDATE_RECORD_COMPARE, updateRecordCompare_saga);
 }
 
 export default function* recordSaga() {

@@ -6,11 +6,11 @@ export const fileApi = {
 
         let d = new Date().getTime();
         const length = fileList.length;
-        for(let i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             formData.append("files", fileList[i], `${d}${i}.wav`);
         }
 
-        for(let i = 0; i < length; i++) {
+        for (let i = 0; i < length; i++) {
             formData.append("texts", textList[i])
         }
 
@@ -28,6 +28,24 @@ export const fileApi = {
             },
         });
     },
+    uploadFileOne: (file, text) => {
+        const formData = new FormData();
+
+        let d = new Date().getTime();
+
+        formData.append("file", file, `${d}.wav`);
+        formData.append("text", text);
+
+        return request({
+            url: '',
+            method: 'POST',
+            data: formData,
+            isAuthRequest: false,
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        })
+    }
 };
 
 export default fileApi;

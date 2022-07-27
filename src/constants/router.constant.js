@@ -6,12 +6,11 @@ export const RouterLinks = {
     ABOUT: '/ABOUT',
     TRANSCRIPTION: '/app/transcription',
     RECORDER: '/app/recorder',
-    
+    COMPARE_RECORD: '/app/compare-record',
+
     APP: '/admin',
     PROFILE: '/admin/profile',
     HOME_PAGE: '/admin',
     RECORD_MANAGEMENT: '/admin/management/record',
-    DICTIONARY_MANAGEMENT: '/admin/management/dictionary'
-
-
+    DICTIONARY_MANAGEMENT: '/admin/management/dictionary',
 };

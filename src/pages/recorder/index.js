@@ -186,6 +186,7 @@ export const Recorder = () => {
                         <Icon as={BsArrowLeftShort} w={8} h={8} />
                     </Flex>
                 </Box>
+                
                 <Flex flexDir='column'>
                     <Flex >
                         <Flex
@@ -196,6 +197,12 @@ export const Recorder = () => {
                             alignItems='flex-start'
                             gap={3}
                         >
+                            <Box w='100%' maxW='300px'>
+                                <OutLineButton
+                                    text='Upload file'
+                                    onClick={handleRefresh}
+                                />
+                            </Box>
                             <Select
                                 placeholder='Giới tính'
                                 maxW='300px'
