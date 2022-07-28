@@ -1,5 +1,18 @@
 import { AddIcon, MinusIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, IconButton, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, NumberDecrementStepper, NumberIncrementStepper, NumberInput, NumberInputField, NumberInputStepper, Select } from '@chakra-ui/react';
+import { Button, 
+    Flex, 
+    IconButton, 
+    Input, 
+    Modal, 
+    ModalBody, 
+    ModalCloseButton, 
+    ModalContent, 
+    ModalFooter, 
+    ModalHeader, 
+    ModalOverlay, 
+    NumberInput, 
+    NumberInputField, 
+    Select } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
 import { iconApi, locationApi } from '../../../services/api';
 

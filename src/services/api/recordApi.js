@@ -50,6 +50,25 @@ export const recordApi = {
             },
             isAuthRequest: false
         })
+    },
+
+    uploadOneFile: (data = {}) => {
+        const formData = new FormData();
+
+        formData.append('file', data.file);
+        formData.append('text', data.text);
+        formData.append('gender', data.gender);
+        formData.append('area', data.area);
+        formData.append('age', data.age);
+
+        return request({
+            url: '/admin/v1/records/upload_one',
+            method: 'POST',
+            data: formData,
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        })
     }
 
 }
