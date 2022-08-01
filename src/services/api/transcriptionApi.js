@@ -26,7 +26,7 @@ export const transcriptionApi = {
         formData.append('language', 1);
 
         return request({
-            url: 'https://asr.hpda.vn/recog',
+            url: '/admin/v1/ai/transcription_mta',
             method: 'POST',
             data: formData,
             headers: {

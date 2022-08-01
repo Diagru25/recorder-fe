@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Icon, Text, Textarea, useToast } from '@chakra-ui/react';
+import { Box, Button, Divider, Flex, Icon, Spinner, Text, Textarea, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { BsArrowLeftShort } from 'react-icons/bs';
@@ -29,6 +29,7 @@ export const TranscriptionMTA = () => {
     const [transcriptionResult, setTranscriptionResult] = useState('');
 
     const [file, setFile] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChangeFile = (e) => {
         const file = e.target.files[0];
@@ -88,37 +89,18 @@ export const TranscriptionMTA = () => {
         history.goBack();
     }
 
-    const handleTranscription = async (blob) => {
+    const handleTranscription = async (blob = null) => {
         try {
-            // const res = await transcriptionApi.transcriptionMta(blob);
-            // console.log(res);
-            const formData = new FormData();
+            setIsLoading(true);
+            const res = await transcriptionApi.transcriptionMta(blob || file);
+            const { data } = res;
 
-            let d = new Date().getTime();
-            formData.append('the_file', file, `${d}.wav`);
-            formData.append('language', "1");
-
-            // const requestOptions = {
-            //     method: 'POST',
-            //     //headers: { "Content-Type": "multipart/form-data" },
-            //     //data: formData
-            //     body: formData
-            // };
-            // const response = await fetch('https://asr.hpda.vn/recog', requestOptions);
-            // console.log(response)
-            // const data = await response.json();
-
-            //axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-            const res = await axios.post('https://asr.hpda.vn/recog', formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            });
-
-            console.log(res);
+            setTranscriptionResult(data);
+            setIsLoading(false);
         }
         catch (error) {
             console.log(error);
+            setIsLoading(false);
         }
     }
 
@@ -162,9 +144,11 @@ export const TranscriptionMTA = () => {
                     <Flex gap={8}>
                         <Flex flex={1} flexDir='column' alignContent='flex-start' gap={3}>
                             <Text fontWeight='bold' fontSize={20} color='blue.600'>THU ÂM</Text>
-                            <Button onClick={handleRecord} colorScheme='blue'>{isRecording ? 'Dừng' : 'Ghi âm'}</Button>
                             <input type='file' onChange={handleChangeFile} />
-                            <Button onClick={() => handleTranscription('abc')} colorScheme='blue'>up</Button>
+                            <Button onClick={() => handleTranscription()} colorScheme='blue'>Upload</Button>
+                            <Divider />
+                            <Button onClick={handleRecord} colorScheme='blue'>{isRecording ? 'Dừng' : 'Ghi âm'}</Button>
+
                             {
                                 record.url && <audio controls src={record.url} />
                             }
@@ -172,11 +156,32 @@ export const TranscriptionMTA = () => {
                         </Flex>
 
                         <Flex flex={3} flexDir='column' gap={3}>
-                            <Text fontWeight='bold' fontSize={20} color='blue.600'>KẾT QUẢ</Text>
+                            {
+                                <Flex alignItems='center'>
+                                    {
+                                        isLoading
+                                            ?
+                                            <Spinner
+                                                thickness='4px'
+                                                speed='0.65s'
+                                                emptyColor='gray.200'
+                                                color='blue.500'
+                                                size='lg'
+                                                mr={3}
+                                            />
+                                            : null
+                                    }
+                                    <Text fontWeight='bold' fontSize={20} color='blue.600'>{!isLoading ? 'KẾT QUẢ' : 'ĐANG XỬ LÝ...'}</Text>
+                                </Flex>
+
+                            }
                             <Textarea
-                                rows={10}
-                                value={transcriptionResult?.text}
-                                onChange={() => { }} />
+                                rows={25}
+                                value={transcriptionResult}
+                                onChange={() => { }}
+                                fontSize={15}
+                            />
+
                         </Flex>
                     </Flex>
                 </Flex>
