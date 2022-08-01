@@ -4,7 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 import { RouterLinks } from '../constants/router.constant';
 import { Box } from '@chakra-ui/react';
 import {
-    HomeClient, Recorder, Transcription, CompareRecord
+    HomeClient, Recorder, Transcription, CompareRecord, TranscriptionMTA
 } from '../pages';
 
 const ClientRouter = () => {
@@ -12,6 +12,12 @@ const ClientRouter = () => {
         <Box w='100%' h='100%' >
             <Route>
                 <Switch>
+
+                    <Route
+                        path={RouterLinks.TRANSCRIPTION_MTA}
+                        component={TranscriptionMTA}
+                    />
+
                     <Route
                         path={RouterLinks.COMPARE_RECORD}
                         component={CompareRecord}

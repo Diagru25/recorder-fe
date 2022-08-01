@@ -134,6 +134,7 @@ export const request = ({ method, url, data, isAuthRequest, params, headers = {}
             url,
             data,
             headers,
+            baseURL: url === 'https://asr.hpda.vn/recog' ? "" : process.env.REACT_APP_BASE_URL
         })
             .then((response) => {
                 resolve(response.data);

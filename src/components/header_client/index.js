@@ -22,7 +22,7 @@ export const HeaderClient = () => {
                     <ul id='menu-client'>
                         <li>ĐÓNG GÓP</li>
                         <Link to={RouterLinks.COMPARE_RECORD}><li>KIỂM TRA</li></Link>
-                        <li>NGÔN NGỮ</li>
+                        <Link to={RouterLinks.TRANSCRIPTION_MTA}><li>DEMO</li></Link>
                         <li>GIỚI THIỆU</li>
                     </ul>
                 </Flex>

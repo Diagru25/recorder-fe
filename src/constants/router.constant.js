@@ -7,6 +7,7 @@ export const RouterLinks = {
     TRANSCRIPTION: '/app/transcription',
     RECORDER: '/app/recorder',
     COMPARE_RECORD: '/app/compare-record',
+    TRANSCRIPTION_MTA: '/app/transcription-demo',
 
     APP: '/admin',
     PROFILE: '/admin/profile',

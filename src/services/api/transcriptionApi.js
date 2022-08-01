@@ -16,6 +16,24 @@ export const transcriptionApi = {
                 "Content-Type": "multipart/form-data",
             },
         })
+    },
+
+    transcriptionMta: (file) => {
+        const formData = new FormData();
+
+        let d = new Date().getTime();
+        formData.append('file', file, `${d}.wav`);
+        formData.append('language', 1);
+
+        return request({
+            url: 'https://asr.hpda.vn/recog',
+            method: 'POST',
+            data: formData,
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        })
+
     }
 }
 

@@ -5,3 +5,4 @@ export * from './recorder';
 export * from './transcription';
 export * from './record_management';
 export * from './compare_record';
+export * from './transcription_mta';
